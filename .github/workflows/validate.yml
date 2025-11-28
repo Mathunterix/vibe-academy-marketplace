@@ -1,0 +1,123 @@
+name: validate marketplace
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: validate json files
+        run: |
+          echo "🔍 validating json files..."
+
+          # validate marketplace.json
+          if ! jq empty marketplace.json 2>/dev/null; then
+            echo "❌ invalid marketplace.json"
+            exit 1
+          fi
+          echo "✅ marketplace.json valid"
+
+          # validate plugin.json
+          if ! jq empty .claude-plugin/plugin.json 2>/dev/null; then
+            echo "❌ invalid .claude-plugin/plugin.json"
+            exit 1
+          fi
+          echo "✅ plugin.json valid"
+
+      - name: validate skills structure
+        run: |
+          echo "🔍 validating skills..."
+
+          # check archon skill has SKILL.md
+          if [ ! -f "skills/archon/SKILL.md" ]; then
+            echo "❌ skills/archon/SKILL.md missing"
+            exit 1
+          fi
+
+          # validate archon SKILL.md has yaml frontmatter
+          if ! head -1 "skills/archon/SKILL.md" | grep -q "^---$"; then
+            echo "❌ skills/archon/SKILL.md missing yaml frontmatter"
+            exit 1
+          fi
+
+          echo "✅ skill archon valid"
+
+      - name: validate agents structure
+        run: |
+          echo "🔍 validating agents..."
+
+          for agent in agents/*/*.md; do
+            if [ ! -f "$agent" ]; then
+              continue
+            fi
+
+            # check yaml frontmatter exists
+            if ! head -1 "$agent" | grep -q "^---$"; then
+              echo "❌ $agent missing yaml frontmatter"
+              exit 1
+            fi
+
+            echo "✅ $agent valid"
+          done
+
+          echo "✨ all agents validated!"
+
+      - name: validate commands structure
+        run: |
+          echo "🔍 validating commands..."
+
+          for command in commands/*/*.md; do
+            if [ ! -f "$command" ]; then
+              continue
+            fi
+
+            # check yaml frontmatter exists
+            if ! head -1 "$command" | grep -q "^---$"; then
+              echo "❌ $command missing yaml frontmatter"
+              exit 1
+            fi
+
+            echo "✅ $command valid"
+          done
+
+          echo "✨ all commands validated!"
+
+      - name: check required files
+        run: |
+          echo "🔍 checking required files..."
+
+          required_files=(
+            "README.md"
+            "CHANGELOG.md"
+            "marketplace.json"
+            ".claude-plugin/plugin.json"
+          )
+
+          for file in "${required_files[@]}"; do
+            if [ ! -f "$file" ]; then
+              echo "❌ required file missing: $file"
+              exit 1
+            fi
+            echo "✅ $file exists"
+          done
+
+          echo "✨ all required files present!"
+
+      - name: summary
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "✅ validation complete!"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo ""
+          echo "📦 marketplace structure:"
+          echo "  - 2 agents (1-vibeplanning)"
+          echo "  - 6 commands (2-context-engineering, 3-implementation, 6-extra, 8-documentation)"
+          echo "  - 1 skill (archon)"
+          echo ""
+          echo "🎉 ready for release!"

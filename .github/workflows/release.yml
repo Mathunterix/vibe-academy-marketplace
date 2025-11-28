@@ -1,0 +1,81 @@
+name: build and release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-desktop-releases:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v4
+
+      - name: get version from tag
+        id: version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      - name: create releases directory
+        run: mkdir -p releases
+
+      - name: build skill packages for claude desktop
+        run: |
+          # build le skill archon
+          echo "📦 building archon skill..."
+          cd skills/archon
+          zip -r "../../releases/archon-v${{ steps.version.outputs.VERSION }}.zip" .
+          cd ../..
+          echo "✅ created releases/archon-v${{ steps.version.outputs.VERSION }}.zip"
+
+      - name: list generated files
+        run: |
+          echo "📋 generated releases:"
+          ls -lh releases/
+
+      - name: create github release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: releases/*.zip
+          body: |
+            ## 🎉 vibe academy marketplace - version ${{ steps.version.outputs.VERSION }}
+
+            ### installation
+
+            #### pour claude code (marketplace)
+            \`\`\`bash
+            /plugin marketplace add ${{ github.repository }}
+            /plugin install vibe-academy@vibe-academy-marketplace
+            \`\`\`
+
+            #### pour claude desktop (manual)
+            téléchargez le skill .zip ci-dessous et uploadez via :
+            **settings → capabilities → skills → upload skill**
+
+            ### contenu
+
+            **agents (2):**
+            - ✅ deep-search - recherche approfondie brightdata/brave
+            - ✅ explore-codebase - exploration spécialisée codebase
+
+            **commands (6):**
+            - ✅ create-plan - plan d'implémentation complet
+            - ✅ execute-plan - exécution avec task management
+            - ✅ prompt-agent - créer/optimiser agents
+            - ✅ prompt-command - créer/optimiser commands
+            - ✅ start-session - initialiser session avec context
+            - ✅ update-docs-command - mettre à jour memory bank
+
+            **skills (1):**
+            - ✅ archon - knowledge base + project management via rest api
+
+            ### changelog
+
+            voir [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) pour les détails.
+
+            ---
+
+            **note**: fonctionne avec ou sans dépendances (archon, brightdata optionnels)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

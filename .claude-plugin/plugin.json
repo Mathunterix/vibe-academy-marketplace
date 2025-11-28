@@ -1,0 +1,27 @@
+{
+  "name": "vibe-academy",
+  "description": "agents, commands et skills pour maîtriser le développement avec claude code - recherche, exploration, planning, documentation et gestion de projet avec archon",
+  "version": "1.0.0",
+  "author": {
+    "name": "Matthieu Cousin",
+    "email": "contact@vibeacademy.com"
+  },
+  "homepage": "https://vibeacademy.com",
+  "repository": "https://github.com/vibeacademy/vibe-academy-marketplace",
+  "license": "MIT",
+  "keywords": [
+    "vibe-academy",
+    "development",
+    "research",
+    "planning",
+    "documentation",
+    "archon",
+    "codebase-exploration",
+    "task-management"
+  ],
+  "categories": [
+    "development",
+    "productivity",
+    "workflow"
+  ]
+}

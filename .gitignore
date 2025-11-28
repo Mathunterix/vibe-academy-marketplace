@@ -1,0 +1,9 @@
+.DS_Store
+node_modules/
+*.log
+.env
+dist/
+*.zip
+!releases/*.zip
+.vscode/
+.idea/

@@ -1,0 +1,23 @@
+{
+  "name": "vibe-academy-marketplace",
+  "owner": {
+    "name": "Matthieu Cousin",
+    "email": "contact@vibeacademy.com"
+  },
+  "metadata": {
+    "description": "marketplace officiel vibe academy - agents, commands et skills pour maîtriser le développement avec claude code",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "vibe-academy",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/vibeacademy/vibe-academy-marketplace.git"
+      },
+      "description": "agents, commands et skills pour le développement avec claude - recherche approfondie, exploration codebase, planning, documentation et gestion de projet",
+      "version": "1.0.0",
+      "strict": true
+    }
+  ]
+}
